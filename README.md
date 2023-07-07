@@ -5,4 +5,4 @@
 项目链接: http://www.saisaiwa.com/archives/1687766025024
 
 
-![Alt](http://qcdn.saisaiwa.com/article/tft-spi-day2%20(2).jpg#pic_center)
+![Alt](/img/tft-spi.jpg#pic_center)
