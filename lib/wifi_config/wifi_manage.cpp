@@ -5,60 +5,145 @@ DNSServer dnsServer;
 AsyncWebServer server(80);
 I2CMemory eeprom(AT24CX_ADDRESS);
 
-static RunState currentRunState;
+WIFIConfig gloabWifiConfig;
 
-// class CaptiveRequestHandler : public AsyncWebHandler {
-//    public:
-//     CaptiveRequestHandler() {}
-//     virtual ~CaptiveRequestHandler() {}
+volatile static RunState currentRunState;
 
-//     bool canHandle(AsyncWebServerRequest* request) {
-//         // request->addInterestingHeader("ANY");
-//         return true;
-//     }
+void handleRequest(AsyncWebServerRequest* request) {
+    request->redirect("http://192.168.1.1/");
+}
 
-//     void handleRequest(AsyncWebServerRequest* request) {}
-// };
+void initWifiManage() {
+    uint8_t* ssid = (uint8_t*)calloc(EEPROMAddressEnum::WIFI_CONF_SSID_LEN,
+                                     sizeof(uint8_t));
+    uint8_t* password = (uint8_t*)calloc(
+        EEPROMAddressEnum::WIFI_CONF_PASSWORD_LEN, sizeof(uint8_t));
+
+    if (ssid == NULL || password == NULL) {
+        printf("ERROR: getWifiAPConfig内存分配失败");
+        return;
+    }
+    gloabWifiConfig.password = password;
+    gloabWifiConfig.ssidName = ssid;
+}
+
+void freeWifiManage() {
+    if (gloabWifiConfig.password != NULL) {
+        free(gloabWifiConfig.password);
+    }
+    if (gloabWifiConfig.ssidName != NULL) {
+        free(gloabWifiConfig.ssidName);
+    }
+}
 
 RunState getAPState(void) {
     return currentRunState;
 }
 
 void resetWifiConcig(void) {
-    eeprom.clear(EEPROMAddressEnum::WIFI_CONF_P1);
-    eeprom.clear(EEPROMAddressEnum::WIFI_CONF_P2);
-    eeprom.clear(EEPROMAddressEnum::WIFI_CONF_P3);
-    eeprom.clear(EEPROMAddressEnum::WIFI_CONF_S1);
-    eeprom.clear(EEPROMAddressEnum::WIFI_CONF_S2);
-    eeprom.clear(EEPROMAddressEnum::WIFI_CONF_S3);
+    eeprom.clear(EEPROMAddressEnum::WIFI_CONF_SSID,
+                 EEPROMAddressEnum::WIFI_CONF_SSID_LEN);
+    eeprom.clear(EEPROMAddressEnum::WIFI_CONF_PASSWORD,
+                 EEPROMAddressEnum::WIFI_CONF_PASSWORD_LEN);
+
+    memset(gloabWifiConfig.password, 0x00,
+           EEPROMAddressEnum::WIFI_CONF_PASSWORD_LEN);
+    memset(gloabWifiConfig.ssidName, 0x00,
+           EEPROMAddressEnum::WIFI_CONF_SSID_LEN);
 }
 
 void startRunWifiAPConfig(void) {
-    WiFi.softAP("ESP32-ETMD");
+    IPAddress localIP(192, 168, 1, 1);   // 热点IP地址
+    IPAddress gateway(192, 168, 1, 1);   // 路由主地址
+    IPAddress subnet(255, 255, 255, 0);  // 子网掩码
+                                         // 获取设备编码
+    uint64_t macAddress = ESP.getEfuseMac();
+    char macString[13];
+    snprintf(macString, sizeof(macString), "%02X%02X%02X%02X%02X%02X",
+             (uint8_t)(macAddress >> 40), (uint8_t)(macAddress >> 32),
+             (uint8_t)(macAddress >> 24), (uint8_t)(macAddress >> 16),
+             (uint8_t)(macAddress >> 8), (uint8_t)macAddress);
+    char ssid[32];
+    snprintf(ssid, sizeof(ssid), "ETMD-%s", macString);
+    WiFi.softAP(ssid);
+    WiFi.softAPConfig(localIP, gateway, subnet);
     dnsServer.start(53, "*", WiFi.softAPIP());
+
+    // 设置请求处理程序
+    server.onNotFound(handleRequest);
 
     // server.addHandler(new CaptiveRequestHandler()).setFilter(ON_AP_FILTER);
     server.on("/", [](AsyncWebServerRequest* request) {
         AsyncResponseStream* response =
             request->beginResponseStream("text/html");
         response->print(
-            "<!DOCTYPE html><html><head><title>Captive "
-            "Portal</title></head><body>");
+            "<html>\n"
+            "<head>\n"
+            "  <meta charset=\"UTF-8\">\n"
+            "  <title>设置WiFi</title>\n"
+            "  <style>\n"
+            "    body {\n"
+            "      font-family: Arial, sans-serif;\n"
+            "      text-align: center;\n"
+            "    }\n"
+            "\n"
+            "    h1 {\n"
+            "      margin-top: 30px;\n"
+            "    }\n"
+            "\n"
+            "    form {\n"
+            "      display: inline-block;\n"
+            "      text-align: left;\n"
+            "      margin-top: 30px;\n"
+            "    }\n"
+            "\n"
+            "    label {\n"
+            "      display: block;\n"
+            "      margin-bottom: 10px;\n"
+            "    }\n"
+            "\n"
+            "    input[type=\"text\"],\n"
+            "    input[type=\"password\"] {\n"
+            "      width: 200px;\n"
+            "      padding: 5px;\n"
+            "      border: 1px solid #ccc;\n"
+            "      border-radius: 4px;\n"
+            "    }\n"
+            "\n"
+            "    input[type=\"submit\"] {\n"
+            "      margin-top: 10px;\n"
+            "      padding: 8px 15px;\n"
+            "      background-color: #4CAF50;\n"
+            "      color: white;\n"
+            "      border: none;\n"
+            "      border-radius: 4px;\n"
+            "      cursor: pointer;\n"
+            "    }\n"
+            "  </style>\n"
+            "</head>\n"
+            "<body>\n"
+            "  <h1>设置WiFi</h1>\n"
+            "\n");
 
         if (request->hasParam("error")) {
             AsyncWebParameter* p = request->getParam("error");
             const char* errorStr = p->value().c_str();
-            response->printf("<h2 style='color:read'>%s</h2>", errorStr);
+            response->printf("<h2 style=\"color\":red;>%s</h2>", errorStr);
         }
 
         response->print(
-            "<h1>WiFi AP配网</h1><form method='POST' action='/save'><label "
-            "for='ssid'>WiFi名称:</label><br><input type='text' id='ssid' "
-            "name='ssid'><br><label for='password'>WiFi密码:</label><br><input "
-            "type='password' id='password' name='password'><br><br><input "
-            "type='submit' value='保存'></form>");
-
-        response->print("</body></html>");
+            "  <form method=\"post\" action=\"/save\">\n"
+            "    <label for=\"ssid\">WiFi名称:</label>\n"
+            "    <input type=\"text\" id=\"ssid\" name=\"ssid\" required>\n"
+            "\n"
+            "    <label for=\"password\">WiFi密码:</label>\n"
+            "    <input type=\"password\" id=\"password\" name=\"password\" "
+            "required>\n"
+            "\n"
+            "    <input type=\"submit\" value=\"保存\">\n"
+            "  </form>\n"
+            "</body>\n"
+            "</html>");
         request->send(response);
     });
 
@@ -68,22 +153,36 @@ void startRunWifiAPConfig(void) {
         String ssid = request->arg("ssid");
         String password = request->arg("password");
 
-        if (ssid.length() < 24) {
+        if (ssid.length() > EEPROMAddressEnum::WIFI_CONF_SSID_LEN) {
             request->redirect("/?error=SSID不可超过24字符长度");
             return;
         }
 
-        if (password.length() < 24) {
+        if (password.length() > EEPROMAddressEnum::WIFI_CONF_PASSWORD_LEN) {
             request->redirect("/?error=密码不可超过24字符长度");
             return;
         }
+        password.trim();
+        ssid.trim();
 
+        printf("打印获取保存的数据:SSID:%s, PWD:%s\n", ssid, password);
         // 保存WiFi配置
+        resetWifiConcig();
         WIFIConfig config;
-        config.password = (uint8_t*)password.c_str();
+        config.ssidName = (uint8_t*)ssid.c_str();
         config.password = (uint8_t*)password.c_str();
         setWifiConfig(config);
 
+        printf("保存WIFI成功\n");
+
+        WIFIConfig wifiConfig = getWifiAPConfig();
+        printf("获取保存的WIFIConfig-> SSID:%s PWD:%s \n", wifiConfig.ssidName,
+               wifiConfig.password);
+
+        AsyncResponseStream* response =
+            request->beginResponseStream("text/html");
+        response->print("<h1>保存成功正在连接....<h1>");
+        request->send(response);
         // 重启服务
         ESP.restart();
     });
@@ -101,61 +200,26 @@ void stopWifiAp(void) {
     currentRunState = RunState::NO_CONNECT;
 }
 
-void splitArray(const uint8_t* source,
-                uint8_t* dest1,
-                uint8_t* dest2,
-                uint8_t* dest3) {
-    int i;
-    // 拆分数组并将元素复制到目标数组
-    for (i = 0; i < 8; i++) {
-        dest1[i] = source[i];
-        dest2[i] = source[i + 8];
-        dest3[i] = source[i + 16];
-    }
-}
-
-void put24(uint8_t address, uint8_t data[24]) {
-    uint8_t index = address;
-    uint8_t part1[8];
-    uint8_t part2[8];
-    uint8_t part3[8];
-    splitArray(data, part1, part2, part3);
-    eeprom.save(index, part1);
-    index += 8;
-    eeprom.save(index, part2);
-    index += 8;
-    eeprom.save(index, part3);
-}
-
 void setWifiConfig(WIFIConfig config) {
-    put24(EEPROMAddressEnum::WIFI_CONF_S1, config.ssidName);
-    put24(EEPROMAddressEnum::WIFI_CONF_P1, config.password);
-}
+    eeprom.write_page(EEPROMAddressEnum::WIFI_CONF_PASSWORD, config.password,
+                      EEPROMAddressEnum::WIFI_CONF_PASSWORD_LEN);
+    eeprom.write_page(EEPROMAddressEnum::WIFI_CONF_SSID, config.ssidName,
+                      EEPROMAddressEnum::WIFI_CONF_SSID_LEN);
 
-void read24(uint8_t address, uint8_t* data) {
-    uint8_t index = address;
-    uint8_t part1[8];
-    uint8_t part2[8];
-    uint8_t part3[8];
-    eeprom.read(index, part1);
-    index += 8;
-    eeprom.read(index, part2);
-    index += 8;
-    eeprom.read(index, part3);
-    memcpy(data, part1, 8);
-    memcpy(data + 8, part2, 8);
-    memcpy(data + 16, part3, 8);
+    memcpy(gloabWifiConfig.password, config.password,
+           EEPROMAddressEnum::WIFI_CONF_PASSWORD_LEN);
+    memcpy(gloabWifiConfig.ssidName, config.ssidName,
+           EEPROMAddressEnum::WIFI_CONF_SSID_LEN);
 }
 
 WIFIConfig getWifiAPConfig(void) {
-    uint8_t ssid[24];
-    uint8_t password[24];
-    read24(EEPROMAddressEnum::WIFI_CONF_S1, ssid);
-    read24(EEPROMAddressEnum::WIFI_CONF_P1, password);
-    WIFIConfig wifi;
-    wifi.password = password;
-    wifi.ssidName = ssid;
-    return wifi;
+    eeprom.read_page(EEPROMAddressEnum::WIFI_CONF_PASSWORD,
+                     gloabWifiConfig.password,
+                     EEPROMAddressEnum::WIFI_CONF_PASSWORD_LEN);
+    eeprom.read_page(EEPROMAddressEnum::WIFI_CONF_SSID,
+                     gloabWifiConfig.ssidName,
+                     EEPROMAddressEnum::WIFI_CONF_SSID_LEN);
+    return gloabWifiConfig;
 }
 
 void unconnectWifiSTA() {

@@ -2,45 +2,98 @@
  * @Description:
  * @Author: chenzedeng
  * @Date: 2023-07-07 15:07:08
- * @LastEditTime: 2023-07-07 16:34:41
+ * @LastEditTime: 2023-07-09 10:00:35
  */
 #include "at24cx.h"
 
-I2CMemory::I2CMemory(uint8_t address) : i2cDevice(address) {}
+#define MAX_LENGTH 8
 
-bool I2CMemory::save(uint8_t pageAddress, const uint8_t* data) {
-    // 创建一个数据缓冲区，用于包含页地址和数据
-    uint8_t buffer[9];
-    buffer[0] = pageAddress;
-    memcpy(&buffer[1], data, 8);  // 复制数据到缓冲区
+I2CMemory::I2CMemory(uint8_t address) : i2c_dev(address, &Wire) {}
 
-    // 执行页写操作
-    return i2cDevice.write(buffer, 9);
-}
-
-bool I2CMemory::read(uint8_t pageAddress, uint8_t* buffer) {
-    // 创建一个地址缓冲区，用于指定要读取的页地址
-    uint8_t addressBuffer[1];
-    addressBuffer[0] = pageAddress;
-
-    // 设置读取操作的目标地址
-    if (!i2cDevice.write_then_read(addressBuffer, 1, buffer, 8)) {
-        return false;  // 设置目标地址失败
+bool I2CMemory::init() {
+    if (!i2c_dev.begin()) {
+        return false;
     }
-
-    // 检查读取到的数据是否为0xFF，如果是，则停止读取
-    for (int i = 0; i < 8; i++) {
-        if (buffer[i] == 0xFF) {
-            break;
-        }
-    }
-
     return true;
 }
 
-bool I2CMemory::clear(uint8_t pageAddress) {
-    uint8_t buffer[9];
-    buffer[0] = pageAddress;
-    memset(&buffer[1], 0xFF, 8);
-    return i2cDevice.write(buffer, 9);
+bool I2CMemory::write_byte(uint8_t addr, uint8_t* data, uint8_t len) {
+    i2c_dev.write(data, len, true, &addr, 1);
+    delay(10);
+    return true;
+}
+
+bool I2CMemory::read_byte(uint8_t addr,
+                          uint8_t* dataBuf,
+                          uint8_t len,
+                          bool isCheck) {
+    i2c_dev.write_then_read(&addr, 1, dataBuf, len);
+    if (isCheck) {
+        for (int i = 0; i < len; i++) {
+            if (dataBuf[i] == 0xFF) {
+                dataBuf[i] = 0x00;
+            }
+        }
+    }
+    delay(10);
+    return true;
+}
+
+bool I2CMemory::write_page(uint8_t addr, const uint8_t* data, size_t len) {
+    uint8_t spliteCount = (len > MAX_LENGTH)
+                              ? ((len % MAX_LENGTH == 0) ? len / MAX_LENGTH
+                                                         : len / MAX_LENGTH + 1)
+                              : 1;
+    uint8_t bufs[spliteCount][MAX_LENGTH];
+
+    for (int i = 0; i < spliteCount; i++) {
+        size_t index = i * MAX_LENGTH;
+        for (int j = 0; j < MAX_LENGTH; j++) {
+            if (*data) {
+                bufs[i][j] = *data;
+                data++;
+            } else {
+                bufs[i][j] = 0xFF;
+            }
+        }
+    }
+    uint8_t startAddress = addr;
+    for (int i = 0; i < spliteCount; i++) {
+        write_byte(startAddress, bufs[i], MAX_LENGTH);
+        startAddress += 8;
+    }
+    return true;
+}
+
+bool I2CMemory::read_page(uint8_t addr, uint8_t* data, size_t len) {
+    uint8_t spliteCount = (len > MAX_LENGTH)
+                              ? ((len % MAX_LENGTH == 0) ? len / MAX_LENGTH
+                                                         : len / MAX_LENGTH + 1)
+                              : 1;
+    uint8_t startAddress = addr;
+    uint8_t isDone = false;
+    uint8_t buf[MAX_LENGTH];
+    for (int i = 0; i < spliteCount; i++) {
+        if (isDone) {
+            break;
+        }
+        read_byte(startAddress, buf, MAX_LENGTH, false);
+        if (buf[MAX_LENGTH - 1] == 0xFF) {
+            isDone = true;
+            for (int j = 0; j < MAX_LENGTH; j++) {
+                if (buf[j] == 0xFF) {
+                    buf[j] = 0x00;
+                }
+            }
+        }
+        memcpy(data + (i * MAX_LENGTH), buf, MAX_LENGTH);
+        startAddress += 8;
+    }
+    return true;
+}
+
+bool I2CMemory::clear(uint8_t addr, uint8_t len) {
+    uint8_t buf[len];
+    memset(buf, 0xFF, sizeof(buf));
+    return write_page(addr, buf, len);
 }

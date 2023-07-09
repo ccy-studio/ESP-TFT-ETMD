@@ -1,3 +1,9 @@
+/*
+ * @Description:
+ * @Author: chenzedeng
+ * @Date: 2023-07-07 20:01:44
+ * @LastEditTime: 2023-07-09 11:56:02
+ */
 #ifndef __WIFI_CONFIG_
 #define __WIFI_CONFIG_
 
@@ -16,10 +22,14 @@ enum class RunState {
     FAIL = -1,
 };
 
-typedef struct WIFIConfig {
+struct WIFIConfig {
     uint8_t* ssidName;
     uint8_t* password;
 };
+
+void initWifiManage();
+
+void freeWifiManage();
 
 /**
  * 获取当前WIFI的模式与状态
@@ -53,5 +63,7 @@ void unconnectWifiSTA();
 void connectWifiSTA();
 
 void mainLoop(void);
+
+void testEEPROM();
 
 #endif
