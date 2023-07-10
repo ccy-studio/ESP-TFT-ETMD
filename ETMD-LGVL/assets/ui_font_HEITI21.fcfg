@@ -1,0 +1,16 @@
+{
+  "codename": "HEITI21",
+  "ttf_path": "\\assets\\Smiley_Sans_Oblique_斜体.ttf",
+  "bin_path": "\\assets\\ui_font_HEITI21.bin",
+  "c_path": "\\assets\\ui_font_HEITI21.c",
+  "cfg_path": "\\assets\\ui_font_HEITI21.fcfg",
+  "size": 21,
+  "bpp": 4,
+  "letters": 5,
+  "ranges": [
+    "0x4E00-0x9FFF"
+  ],
+  "symbols": "",
+  "customparams": "",
+  "uploaded": false
+}
