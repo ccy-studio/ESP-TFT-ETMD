@@ -2,19 +2,17 @@
  * @Description:
  * @Author: chenzedeng
  * @Date: 2023-07-07 10:23:33
- * @LastEditTime: 2023-07-09 22:22:36
+ * @LastEditTime: 2023-07-10 13:38:14
  */
-#include <Adafruit_AHTX0.h>
+
 #include <Arduino.h>
-#include <HTTPClient.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include "at24cx.h"
 #include "led_util.h"
 #include "user_key.h"
 #include "wifi_manage.h"
-
-Adafruit_AHTX0 aht;
+#include "aht2x.h"
 
 void keyEvent(UserKey key) {
     printf("SendEvent===>> Id:%d, isPress:%d, isPressLong:%d, tickCount:%ld\n",
@@ -44,14 +42,6 @@ void setup() {
     //     while (1)
     //         delay(10);
     // }
-    // resetWifiConcig();
-    // WIFIConfig setWifi;
-    // setWifi.password = (uint8_t*)"13083278337";
-    // setWifi.ssidName = (uint8_t*)"Connect-YC";
-    // setWifiConfig(setWifi);
-
-    // printf("1 WIFIConfig-> SSID:%s PWD:%s \n", setWifi.ssidName,
-    // setWifi.password);
 
     WIFIConfig config = getWifiAPConfig();
     printf("WIFIConfig-> SSID:%s PWD:%s \n", config.ssidName, config.password);
@@ -69,21 +59,4 @@ void setup() {
 
 void loop() {
     mainLoop();
-
-    // delay(500);
-    // digitalWrite(LED, LOW);
-    // delay(500);
-    // digitalWrite(LED, HIGH);
-
-    // sensors_event_t humidity, temp;
-    // aht.getEvent(&humidity, &temp);
-    // printf("温度：%f -- 湿度: %f\n", temp.temperature,
-    //        humidity.relative_humidity);
-
-    // size_t len = 50;
-    // uint8_t* buf = (uint8_t*)calloc(len, sizeof(uint8_t));
-    // eeprom.read_page(0x00, buf, len);
-    // printf("最终输出的文字: %s\n", buf);
-    // free(buf);
-    // buf = NULL;
 }
