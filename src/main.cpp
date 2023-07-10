@@ -2,7 +2,7 @@
  * @Description:
  * @Author: chenzedeng
  * @Date: 2023-07-07 10:23:33
- * @LastEditTime: 2023-07-10 13:38:14
+ * @LastEditTime: 2023-07-10 20:59:43
  */
 
 #include <Arduino.h>
@@ -13,15 +13,16 @@
 #include "user_key.h"
 #include "wifi_manage.h"
 #include "aht2x.h"
+#include "gui.h"
 
-void keyEvent(UserKey key) {
-    printf("SendEvent===>> Id:%d, isPress:%d, isPressLong:%d, tickCount:%ld\n",
-           key.keyId, key.isPress, key.isPressLong, key.tickCount);
-    if (key.keyId == ADC_KEY_GROUP_HL && key.isPress == 1) {
-        resetWifiConcig();
-        printf("重置WIFI成功");
-    }
-}
+// void keyEvent(UserKey key) {
+//     printf("SendEvent===>> Id:%d, isPress:%d, isPressLong:%d, tickCount:%ld\n",
+//            key.keyId, key.isPress, key.isPressLong, key.tickCount);
+//     if (key.keyId == ADC_KEY_GROUP_HL && key.isPress == 1) {
+//         resetWifiConcig();
+//         printf("重置WIFI成功");
+//     }
+// }
 
 void setup() {
     Serial.begin(115200);
@@ -53,8 +54,9 @@ void setup() {
     }
 
     xTaskCreate(led_thread, "LED Task", 800, NULL, 1, NULL);
-    xTaskCreate(user_key_thread, "UserKey Task", 2000, NULL, 1, NULL);
-    registerListener(keyEvent);
+    xTaskCreate(user_key_thread, "UserKey Task", 2000, NULL, 2, NULL);
+    xTaskCreate(gui_thread, "GUI Task", 5000, NULL, 2, NULL);
+    // registerListener(keyEvent);
 }
 
 void loop() {

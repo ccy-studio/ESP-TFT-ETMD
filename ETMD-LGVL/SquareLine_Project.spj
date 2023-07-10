@@ -3671,7 +3671,7 @@
               {
                 "nid": -1446720884,
                 "strtype": "OBJECT/Name",
-                "strval": "Image1",
+                "strval": "waterIcon",
                 "InheritedType": 10
               },
               {
@@ -3911,7 +3911,7 @@
               {
                 "nid": -800291299,
                 "strtype": "IMAGE/Asset",
-                "strval": "assets\\water\\baoyu.png",
+                "strval": "assets/water/baoyu.png",
                 "InheritedType": 5
               },
               {
@@ -3953,7 +3953,7 @@
               {
                 "nid": 310560458,
                 "strtype": "OBJECT/Name",
-                "strval": "Label1",
+                "strval": "city",
                 "InheritedType": 10
               },
               {
@@ -4253,7 +4253,7 @@
               {
                 "nid": -1771467248,
                 "strtype": "OBJECT/Name",
-                "strval": "Label2",
+                "strval": "waterNow",
                 "InheritedType": 10
               },
               {
@@ -4553,7 +4553,7 @@
               {
                 "nid": -201657774,
                 "strtype": "OBJECT/Name",
-                "strval": "Label3",
+                "strval": "waterCurrentTemp",
                 "InheritedType": 10
               },
               {
@@ -4853,7 +4853,7 @@
               {
                 "nid": -626419315,
                 "strtype": "OBJECT/Name",
-                "strval": "Label5",
+                "strval": "name",
                 "InheritedType": 10
               },
               {
@@ -5528,204 +5528,7 @@
             },
             {
               "Value": 255,
-              "Time": 1000.0,
-              "InheritedType": 1
-            }
-          ],
-          "TimeReference": 0,
-          "ValueReference": 1,
-          "EarlyApply": false,
-          "ImageSet": "",
-          "PlaybackTime": 0,
-          "PlaybackDelay": 0,
-          "LoopCount": 0,
-          "LoopDelay": 0,
-          "LoopInfinite": false,
-          "guid": "GUID89145589-465642S1532191",
-          "deepid": 1357015768,
-          "locked": false,
-          "properties": [
-            {
-              "nid": 211599886,
-              "strtype": "PROPERTYANIMATION/Name",
-              "strval": "Opacity",
-              "InheritedType": 10
-            },
-            {
-              "nid": 992304565,
-              "strtype": "PROPERTYANIMATION/VariableName",
-              "strval": "PropertyAnimation_0",
-              "InheritedType": 10
-            },
-            {
-              "nid": 1690835869,
-              "strtype": "PROPERTYANIMATION/PropertyFunction",
-              "strval": "anim_callback_set_opacity",
-              "InheritedType": 10
-            },
-            {
-              "nid": 1226453737,
-              "strtype": "PROPERTYANIMATION/StartValue",
-              "InheritedType": 6
-            },
-            {
-              "nid": -1866422035,
-              "strtype": "PROPERTYANIMATION/EndValue",
-              "integer": 255,
-              "InheritedType": 6
-            },
-            {
-              "nid": 1574509938,
-              "strtype": "PROPERTYANIMATION/AbsoluteReference",
-              "strval": "False",
-              "InheritedType": 2
-            },
-            {
-              "nid": -1690531163,
-              "strtype": "PROPERTYANIMATION/Delay",
-              "InheritedType": 6
-            },
-            {
-              "nid": 1871473691,
-              "strtype": "PROPERTYANIMATION/Duration",
-              "integer": 1000,
-              "InheritedType": 6
-            },
-            {
-              "nid": -42217095,
-              "strtype": "PROPERTYANIMATION/Path",
-              "strval": "ease_in",
-              "InheritedType": 3
-            },
-            {
-              "nid": 395418295,
-              "strtype": "PROPERTYANIMATION/FullAnimationDuration",
-              "integer": 1000,
-              "InheritedType": 6
-            },
-            {
-              "nid": -1329305176,
-              "strtype": "PROPERTYANIMATION/LoopCount",
-              "InheritedType": 6
-            },
-            {
-              "nid": 1352733063,
-              "strtype": "PROPERTYANIMATION/Forward",
-              "strval": "True",
-              "InheritedType": 2
-            },
-            {
-              "nid": 701344482,
-              "strtype": "PROPERTYANIMATION/Backward",
-              "strval": "False",
-              "InheritedType": 2
-            },
-            {
-              "nid": 1404218543,
-              "strtype": "PROPERTYANIMATION/EarlyApply",
-              "strval": "False",
-              "InheritedType": 2
-            },
-            {
-              "nid": -1246374325,
-              "strtype": "PROPERTYANIMATION/PropertyGetter",
-              "strval": "anim_callback_get_opacity",
-              "InheritedType": 10
-            },
-            {
-              "nid": 797602495,
-              "strtype": "PROPERTYANIMATION/LoopDelay",
-              "InheritedType": 6
-            },
-            {
-              "nid": 2081361098,
-              "strtype": "PROPERTYANIMATION/PlaybackDelay",
-              "InheritedType": 6
-            },
-            {
-              "nid": -1053155596,
-              "strtype": "PROPERTYANIMATION/PlaybackTime",
-              "InheritedType": 6
-            },
-            {
-              "nid": 547586196,
-              "strtype": "PROPERTYANIMATION/LoopInfinite",
-              "strval": "False",
-              "InheritedType": 2
-            },
-            {
-              "nid": -344870238,
-              "strtype": "PROPERTYANIMATION/ImageSet",
-              "strval": "",
-              "InheritedType": 14
-            }
-          ],
-          "saved_objtypeKey": "PROPERTYANIMATION",
-          "InheritedType": 1
-        }
-      ],
-      "guid": "GUID86076314-465633S9272191",
-      "deepid": -518747256,
-      "locked": false,
-      "properties": [
-        {
-          "nid": 359376594,
-          "strtype": "ELOANIMATION/Name",
-          "strval": "anno_time_left",
-          "InheritedType": 10
-        },
-        {
-          "nid": -1440635406,
-          "strtype": "ELOANIMATION/FunctionName",
-          "strval": "anno_time_left_Animation",
-          "InheritedType": 10
-        },
-        {
-          "nid": -74727739,
-          "strtype": "ELOANIMATION/AnimationTargetObjectType",
-          "strval": "BASIC",
-          "InheritedType": 10
-        },
-        {
-          "nid": 499527599,
-          "strtype": "ELOANIMATION/PlayType",
-          "strval": "Forward",
-          "InheritedType": 3
-        },
-        {
-          "nid": 710179026,
-          "strtype": "ELOANIMATION/Loop",
-          "strval": "False",
-          "InheritedType": 2
-        },
-        {
-          "nid": 625916455,
-          "strtype": "ELOANIMATION/TestTarget",
-          "strval": "GUID98241001-464514S3442191",
-          "InheritedType": 10
-        },
-        {
-          "nid": 79613868,
-          "strtype": "ELOANIMATION/TargetTypeFilter",
-          "strval": "",
-          "InheritedType": 10
-        }
-      ],
-      "saved_objtypeKey": "ELOANIMATION"
-    },
-    {
-      "propertyAnimations": [
-        {
-          "Path": 1,
-          "KeyFrames": [
-            {
-              "Value": 0,
-              "Time": 0.0,
-              "InheritedType": 1
-            },
-            {
-              "Value": 255,
-              "Time": 1000.0,
+              "Time": 500.0,
               "InheritedType": 1
             }
           ],
@@ -5733,7 +5536,7 @@
           "ValueReference": 0,
           "EarlyApply": false,
           "ImageSet": "",
-          "PlaybackTime": 1000,
+          "PlaybackTime": 500,
           "PlaybackDelay": 0,
           "LoopCount": 0,
           "LoopDelay": 0,
@@ -5785,7 +5588,7 @@
             {
               "nid": -1755883435,
               "strtype": "PROPERTYANIMATION/Duration",
-              "integer": 1000,
+              "integer": 500,
               "InheritedType": 6
             },
             {
@@ -5797,7 +5600,7 @@
             {
               "nid": -1989923907,
               "strtype": "PROPERTYANIMATION/FullAnimationDuration",
-              "integer": 1000,
+              "integer": 500,
               "InheritedType": 6
             },
             {
@@ -5842,7 +5645,7 @@
             {
               "nid": 1914153452,
               "strtype": "PROPERTYANIMATION/PlaybackTime",
-              "integer": 1000,
+              "integer": 500,
               "InheritedType": 6
             },
             {
@@ -5899,7 +5702,7 @@
         {
           "nid": -493124687,
           "strtype": "ELOANIMATION/TestTarget",
-          "strval": "GUID98241001-464514S3442191",
+          "strval": "GUID6138389-475619S9372191",
           "InheritedType": 10
         },
         {
@@ -5933,9 +5736,9 @@
     "theme_dark": false,
     "theme_color1": 5,
     "theme_color2": 0,
-    "exportFolderPath": "D:\\Embedded\\Template\\ETMD-LGVL\\target\\SquareLine_Project\\./libraries/ui/src",
-    "projectExportFolderPath": "D:\\Embedded\\Template\\ETMD-LGVL\\target\\SquareLine_Project",
-    "backup_cnt": 17,
+    "exportFolderPath": "/Users/chenzedeng/CodeWorkspace/Project/Embedded/Arduino_Work/ESP-TFT-ETMD/ETMD-LGVL/target/SquareLine_Project/./libraries/ui/src",
+    "projectExportFolderPath": "/Users/chenzedeng/CodeWorkspace/Project/Embedded/Arduino_Work/ESP-TFT-ETMD/ETMD-LGVL/target/SquareLine_Project",
+    "backup_cnt": 19,
     "autosave_cnt": 0,
     "lvgl_version": "8.3.6",
     "callfuncsexport": "C_FILE",

@@ -2,7 +2,7 @@
  * @Description:
  * @Author: chenzedeng
  * @Date: 2023-07-09 13:01:43
- * @LastEditTime: 2023-07-09 22:44:54
+ * @LastEditTime: 2023-07-10 21:34:45
  */
 #include <led_util.h>
 #include "user_key.h"
@@ -16,9 +16,14 @@ static u16 delayMs = 500;
 static void led_keyEvent(UserKey key) {
     if (key.isPress == 1) {
         if (key.keyId == ADC_KEY_ACTION_H) {
+            mode = LED_MODE_AUTO_1;
             delayMs = 500;
         } else if (key.keyId == ADC_KEY_ACTION_L) {
+            mode = LED_MODE_AUTO_1;
             delayMs = 100;
+        }else{
+            mode = LED_MODE_MANUAL;
+            openState = false;
         }
     }
 }

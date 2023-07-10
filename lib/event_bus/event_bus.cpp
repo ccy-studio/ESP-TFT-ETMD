@@ -2,7 +2,7 @@
  * @Description:
  * @Author: chenzedeng
  * @Date: 2023-07-10 10:18:35
- * @LastEditTime: 2023-07-10 10:37:17
+ * @LastEditTime: 2023-07-10 20:34:17
  */
 #include <event_bus.h>
 
@@ -12,7 +12,7 @@ typedef struct {
 } Bus;
 // Bus订阅者容器
 static Bus busArr[BUS_COUNT];
-static int index = -1;
+static int busArrIndex = -1;
 
 void freeEvent(Event event) {
     if (event.data != NULL) {
@@ -21,9 +21,9 @@ void freeEvent(Event event) {
 }
 
 u8 registerListener(EventBusFun_t funt, u8 soruceId) {
-    index++;
-    busArr[index] = Bus{funt, soruceId};
-    return index;
+    busArrIndex++;
+    busArr[busArrIndex] = Bus{funt, soruceId};
+    return busArrIndex;
 }
 
 void sendEvent(Event event) {

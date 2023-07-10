@@ -2,7 +2,7 @@
  * @Description:
  * @Author: chenzedeng
  * @Date: 2023-07-09 13:28:43
- * @LastEditTime: 2023-07-09 22:27:38
+ * @LastEditTime: 2023-07-10 21:09:42
  */
 #include <user_key.h>
 
@@ -16,11 +16,14 @@ static int _index = -0;
 u32 lastTime;
 u8 lastKey;
 int delayCount;
+u16 adcVal;
 
 void sendEvent(UserKey key) {
 #ifdef DEBUG_USER_KEY
-    printf("SendEvent===>> Id:%d, isPress:%d, isPressLong:%d, tickCount:%ld\n",
-           key.keyId, key.isPress, key.isPressLong, key.tickCount);
+    printf(
+        "SendEvent===>> Id:%d, isPress:%d, isPressLong:%d, tickCount:%ld, adc: "
+        "%ld\n",
+        key.keyId, key.isPress, key.isPressLong, key.tickCount, key.adcVal);
 #endif
     for (int i = 0; i < MAX_LEN; i++) {
         UserKeyFun_t item = subscriber[i];
@@ -38,8 +41,10 @@ void checkBtn(int key) {
         // 发送首次按下事件
         UserKey uk;
         uk.isPress = 1;
+        uk.isPressLong = 0;
         uk.tickCount = micros();
         uk.keyId = key;
+        uk.adcVal = adcVal;
         sendEvent(uk);
     } else {
         if (delayCount == LONG_PRESS) {
@@ -48,6 +53,8 @@ void checkBtn(int key) {
             uk.isPressLong = 1;
             uk.tickCount = micros();
             uk.keyId = key;
+            uk.isPress = 0;
+            uk.adcVal = adcVal;
             sendEvent(uk);
         }
     }
@@ -60,13 +67,13 @@ void user_key_thread(void* pvParameters) {
         // Serial.print("Task stack high water mark: ");
         // Serial.println(uxTaskGetStackHighWaterMark(NULL));
         V_DELAY_MS(FREQUENCY);
-        u16 adcVal = analogRead(ADC_KEY_PIN);
+        adcVal = analogRead(ADC_KEY_PIN);
         // printf("ADC Val==>> %ld\n", adcVal);
         delayCount++;
         if (adcVal >= 580 && adcVal <= 650) {
             // 按键1按下了
             checkBtn(ADC_KEY_ACTION_H);
-        } else if (adcVal >= 1470 && adcVal <= 1490) {
+        } else if (adcVal >= 1400 && adcVal <= 1500) {
             // 按键2按下了
             checkBtn(ADC_KEY_ACTION_L);
         } else if (adcVal >= 2200 && adcVal <= 2400) {

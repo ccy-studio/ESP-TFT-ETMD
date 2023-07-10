@@ -10,7 +10,6 @@
 #include "HTTPClient.h"
 #include "util.h"
 #include <ArduinoJson.h>
-#include "http_url_constant.h"
 
 #define DEFAULT_JSON_SIZE 256
 

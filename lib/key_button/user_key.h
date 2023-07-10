@@ -2,7 +2,7 @@
  * @Description:
  * @Author: chenzedeng
  * @Date: 2023-07-09 13:28:37
- * @LastEditTime: 2023-07-09 20:43:45
+ * @LastEditTime: 2023-07-10 21:03:46
  */
 #ifndef __USER_KEY__
 #define __USER_KEY__
@@ -10,7 +10,7 @@
 #include "util.h"
 
 //如果你想打印Log日志请去掉注释
-// #define DEBUG_USER_KEY
+#define DEBUG_USER_KEY
 
 #define ADC_KEY_PIN GPIO_NUM_0
 
@@ -25,6 +25,7 @@ typedef struct {
     u8 isPress;      // 是否按下
     u8 isPressLong;  // 是否长按
     u32 tickCount;
+    u16 adcVal;
 } UserKey;
 
 typedef void (*UserKeyFun_t)(UserKey key);
