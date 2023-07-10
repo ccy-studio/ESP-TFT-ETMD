@@ -8,9 +8,9 @@
   "bpp": 4,
   "letters": 5,
   "ranges": [
-    "0x4E00-0x9FFF"
+    "0x00-0x7f"
   ],
-  "symbols": "",
+  "symbols": "杨浦小雨温度湿度当前",
   "customparams": "",
   "uploaded": false
 }
