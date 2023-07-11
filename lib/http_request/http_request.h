@@ -7,13 +7,11 @@
 #ifndef __HTTP_REQUEST_
 #define __HTTP_REQUEST_
 
+#include <ArduinoJson.h>
 #include "HTTPClient.h"
 #include "util.h"
-#include <ArduinoJson.h>
 
 #define DEFAULT_JSON_SIZE 256
-
-HTTPClient requestClient;
 
 typedef struct {
     char key[20];
@@ -26,5 +24,7 @@ class HttpRequest {
     String postBody(const char* url, RequestMap* params, u8 len);
     String getRequestUrl(const char* url, RequestMap* params, u8 len);
 };
+
+extern HttpRequest httpRequest;
 
 #endif

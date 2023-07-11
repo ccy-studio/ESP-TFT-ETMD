@@ -2,9 +2,12 @@
  * @Description:
  * @Author: chenzedeng
  * @Date: 2023-07-10 10:46:38
- * @LastEditTime: 2023-07-10 11:19:35
+ * @LastEditTime: 2023-07-11 11:07:52
  */
 #include <http_request.h>
+
+HTTPClient requestClient;
+HttpRequest httpRequest;
 
 String HttpRequest::getRequestUrl(const char* url, RequestMap* params, u8 len) {
     String requestUrl = url;

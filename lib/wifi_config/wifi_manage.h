@@ -2,7 +2,7 @@
  * @Description:
  * @Author: chenzedeng
  * @Date: 2023-07-07 20:01:44
- * @LastEditTime: 2023-07-09 11:56:02
+ * @LastEditTime: 2023-07-11 17:22:00
  */
 #ifndef __WIFI_CONFIG_
 #define __WIFI_CONFIG_
@@ -12,6 +12,8 @@
 #include <DNSServer.h>
 #include <WiFi.h>
 #include "ESPAsyncWebServer.h"
+#include "at24cx.h"
+#include "event_bus.h"
 
 enum class RunState {
     CONNECTED = 0,

@@ -2,18 +2,15 @@
  * @Description:
  * @Author: chenzedeng
  * @Date: 2023-07-07 10:23:33
- * @LastEditTime: 2023-07-10 20:59:43
+ * @LastEditTime: 2023-07-11 17:21:27
  */
 
 #include <Arduino.h>
-#include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
-#include "at24cx.h"
-#include "led_util.h"
-#include "user_key.h"
 #include "wifi_manage.h"
-#include "aht2x.h"
 #include "gui.h"
+
+extern Adafruit_AHTX0 aht;
+extern I2CMemory eeprom;
 
 // void keyEvent(UserKey key) {
 //     printf("SendEvent===>> Id:%d, isPress:%d, isPressLong:%d, tickCount:%ld\n",
@@ -28,21 +25,19 @@ void setup() {
     Serial.begin(115200);
     // Init I2C
     Wire.setPins(GPIO_NUM_18, GPIO_NUM_19);
-
     if (!aht.begin(&Wire, 0L, 0x38)) {
         Serial.println("Could not find AHT? Check wiring");
+        while (1)
+            delay(10);
+    }
+    if (!eeprom.init()) {
+        Serial.println("Could not find AT24C? Check wiring");
         while (1)
             delay(10);
     }
 
     initWifiManage();
     delay(500);
-
-    // if (!eeprom.init()) {
-    //     Serial.println("Could not find AT24C? Check wiring");
-    //     while (1)
-    //         delay(10);
-    // }
 
     WIFIConfig config = getWifiAPConfig();
     printf("WIFIConfig-> SSID:%s PWD:%s \n", config.ssidName, config.password);

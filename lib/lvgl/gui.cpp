@@ -1,15 +1,17 @@
 /*
+ * @Description: 
+ * @Author: chenzedeng
+ * @Date: 2023-07-11 10:23:36
+ * @LastEditTime: 2023-07-11 15:16:29
+ */
+/*
  * @Description:
  * @Author: chenzedeng
  * @Date: 2023-07-10 20:12:00
- * @LastEditTime: 2023-07-10 21:49:19
+ * @LastEditTime: 2023-07-11 15:05:07
  */
 #include <gui.h>
 
-/*Don't forget to set Sketchbook location in File/Preferencesto the path of your
- * UI project (the parent foder of this INO file)*/
-
-/*Change to your screen resolution*/
 static const uint16_t screenWidth = 240;
 static const uint16_t screenHeight = 240;
 
@@ -42,17 +44,7 @@ void my_disp_flush(lv_disp_drv_t* disp,
 }
 
 void gui_setup() {
-    Serial.begin(115200); /* prepare for possible serial debug */
-
-    String LVGL_Arduino = "Hello Arduino! ";
-    LVGL_Arduino += String('V') + lv_version_major() + "." +
-                    lv_version_minor() + "." + lv_version_patch();
-
-    Serial.println(LVGL_Arduino);
-    Serial.println("I am LVGL_Arduino");
-
     lv_init();
-
 #if LV_USE_LOG != 0
     lv_log_register_print_cb(
         my_print); /* register print function for debugging */
@@ -82,7 +74,8 @@ void gui_setup() {
 void gui_thread(void* pvParameters) {
     gui_setup();
     while (1) {
-        lv_timer_handler(); /* let the GUI do its work */
-        V_DELAY_MS(5);
+        lv_timer_handler();
+        gui_logic();
+        V_DELAY_MS(FPS_DELAY);
     }
 }

@@ -1,5 +1,5 @@
 #include "wifi_manage.h"
-#include "at24cx.h"
+
 
 DNSServer dnsServer;
 AsyncWebServer server(80);
