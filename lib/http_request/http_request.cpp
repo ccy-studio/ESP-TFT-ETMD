@@ -2,9 +2,10 @@
  * @Description:
  * @Author: chenzedeng
  * @Date: 2023-07-10 10:46:38
- * @LastEditTime: 2023-07-11 11:07:52
+ * @LastEditTime: 2023-07-11 23:07:33
  */
 #include <http_request.h>
+// #include <UrlEncode.h>
 
 HTTPClient requestClient;
 HttpRequest httpRequest;
@@ -22,6 +23,7 @@ String HttpRequest::getRequestUrl(const char* url, RequestMap* params, u8 len) {
             }
         }
     }
+    printf("Return UrlParams: %s\n", requestUrl.c_str());
     return requestUrl;
 }
 
@@ -36,7 +38,10 @@ String HttpRequest::get(const char* url, RequestMap* params, u8 len) {
             response = requestClient.getString();
         }
         requestClient.end();
+    } else {
+        printf("WIFI UnConnect! \n");
     }
+    printf("Send Get ResponseStr:%s\n", response.c_str());
     return response;
 }
 

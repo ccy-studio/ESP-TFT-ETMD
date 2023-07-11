@@ -17,5 +17,6 @@
 
 void gui_thread(void *pvParameters);
 
-void gui_logic();
+void gui_async_time(void* pvParameters);
+void gui_async_task(void* pvParameters);
 #endif

@@ -1,8 +1,8 @@
 /*
- * @Description: 
+ * @Description:
  * @Author: chenzedeng
  * @Date: 2023-07-11 10:23:36
- * @LastEditTime: 2023-07-11 15:16:29
+ * @LastEditTime: 2023-07-11 23:19:34
  */
 /*
  * @Description:
@@ -71,11 +71,16 @@ void gui_setup() {
     Serial.println("Setup done");
 }
 
+void taskInit() {
+    xTaskCreate(gui_async_task, "AsyncTask", 5000, NULL, 1, NULL);
+    xTaskCreate(gui_async_time, "TimeTask", 5000, NULL, 3, NULL);
+}
+
 void gui_thread(void* pvParameters) {
     gui_setup();
+    taskInit();
     while (1) {
         lv_timer_handler();
-        gui_logic();
         V_DELAY_MS(FPS_DELAY);
     }
 }

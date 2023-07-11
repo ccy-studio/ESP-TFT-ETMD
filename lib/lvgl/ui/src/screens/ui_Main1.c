@@ -90,7 +90,7 @@ lv_obj_set_style_text_font(ui_humidityVal, &lv_font_montserrat_20, LV_PART_MAIN|
 
 ui_homeTime = lv_obj_create(ui_Main1);
 lv_obj_set_height( ui_homeTime, 60);
-lv_obj_set_width( ui_homeTime, lv_pct(80));
+lv_obj_set_width( ui_homeTime, lv_pct(90));
 lv_obj_set_align( ui_homeTime, LV_ALIGN_CENTER );
 lv_obj_set_flex_flow(ui_homeTime,LV_FLEX_FLOW_ROW);
 lv_obj_set_flex_align(ui_homeTime, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);

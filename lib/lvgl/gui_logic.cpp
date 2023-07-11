@@ -2,7 +2,7 @@
  * @Description:
  * @Author: chenzedeng
  * @Date: 2023-07-11 15:15:44
- * @LastEditTime: 2023-07-11 17:48:56
+ * @LastEditTime: 2023-07-11 23:52:34
  */
 // #include "aht2x.h"
 #include <gui.h>
@@ -11,6 +11,8 @@
 #define NTP2 "ntp2.aliyun.com"
 #define NTP3 "ntp3.aliyun.com"
 
+#define ASYNC_DELAY 1000  // 异步任务执行频率单位毫秒
+
 #define TIME_UPDATE_DELAY 500
 #define AHT21_UPDATE_DELAY 5000
 
@@ -18,11 +20,15 @@ static u8 _gui_time_falg = 0;
 static u16 _gui_aht21_falg = 0;
 struct tm timeinfo;
 
-static int lastHour;
+static int lastHour = -1;
 static char timeStr[3];   // 时间字符串缓冲区
 static char aht21Str[5];  // AHT21字符串缓冲区
+static char weather_temperature_buf[20];
 
 Adafruit_AHTX0 aht;
+
+extern const lv_img_dsc_t ui_img_4;
+extern const lv_img_dsc_t ui_img_99;
 
 void aht21Gather(float* temp, float* humidity) {
     sensors_event_t humidity_s, temp_s;
@@ -39,20 +45,35 @@ void getTimeInfo() {
     }
 }
 
-void updateWeather(void* parameter) {
+void updateWeather() {
     printf("开始请求获取天气信息\n");
     WeatherResponse response = getWeatherNowInfo();
     if (response.code) {
         printf("天气获取成功==>code:%d text:%s,temp:%s\n", response.code,
                response.text, response.temperature);
+
+        sniprintf(weather_temperature_buf, sizeof(weather_temperature_buf),
+                  "当前温度 %s", response.temperature);
+        lv_label_set_text(ui_Label3, weather_temperature_buf);
+        memset(weather_temperature_buf, 0, sizeof(weather_temperature_buf));
+
+        switch (response.code) {
+            case 4:
+                lv_img_set_src(ui_Image1, &ui_img_4);
+                break;
+            default:
+                lv_img_set_src(ui_Image1, &ui_img_99);
+                break;
+        }
     } else {
         printf("获取天气信息失败\n");
     }
-    // 删除任务
-    vTaskDelete(NULL);
+    Serial.print("updateWeather==> Task stack high water mark: ");
+    Serial.println(uxTaskGetStackHighWaterMark(NULL));
 }
 
 void updateTime() {
+    getTimeInfo();
     // 更新时的文本值
     snprintf(timeStr, sizeof(timeStr), "%02d", timeinfo.tm_hour);
     lv_label_set_text(ui_hour, timeStr);
@@ -81,27 +102,31 @@ void updateAht21() {
     memset(aht21Str, 0x00, sizeof(aht21Str));
 }
 
-void gui_logic() {
-    if (_gui_time_falg == 0) {
+void gui_async_time(void* pvParameters) {
+    while (1) {
         updateTime();
+        lastHour = timeinfo.tm_hour;
+        V_DELAY_MS(500);
     }
-    if (_gui_aht21_falg == 0) {
-        updateAht21();
-    }
-    _gui_time_falg++;
-    _gui_aht21_falg++;
-    // 判断是否需要更新时间
-    if ((_gui_time_falg * FPS_DELAY) >= TIME_UPDATE_DELAY) {
-        _gui_time_falg = 0;
-    }
-    if (lastHour != timeinfo.tm_hour) {
-        printf("创建线程开启获取天气\n");
-        // 过了一小时，更新天气信息
-        xTaskCreate(updateWeather, "Weather", 2048, NULL, 1, NULL);
-    }
-    lastHour = timeinfo.tm_hour;
+}
 
-    if ((_gui_time_falg * FPS_DELAY) >= AHT21_UPDATE_DELAY) {
-        _gui_aht21_falg = 0;
+void gui_async_task(void* pvParameters) {
+    V_DELAY_MS(500);
+    while (1) {
+        if (_gui_aht21_falg == 0) {
+            updateAht21();
+        }
+        _gui_aht21_falg++;
+
+        if ((_gui_aht21_falg * ASYNC_DELAY) >= AHT21_UPDATE_DELAY) {
+            _gui_aht21_falg = 0;
+        }
+
+        if (lastHour != timeinfo.tm_hour) {
+            // 过了一小时，更新天气信息
+            updateWeather();
+            _gui_aht21_falg = 0;
+        }
+        V_DELAY_MS(ASYNC_DELAY);
     }
 }
